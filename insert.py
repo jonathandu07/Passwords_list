@@ -1,6 +1,6 @@
 import pymysql.cursors
 
-fichier = open("passwords.txt", "r")
+fichier = open("passwords.txt", "r",encoding="utf8")
 
 
 # Connect to the database
@@ -17,6 +17,7 @@ with connection:
     with connection.cursor() as cursor:
         # Create a new record
         for i in fichier:
+            #u = i.encode('utf-8')
             sql = "INSERT INTO `passwords_list` (`passwords`) VALUES (%s)"
             cursor.execute(sql, (i))
 
