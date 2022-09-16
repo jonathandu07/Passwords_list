@@ -1,6 +1,6 @@
 import pymysql.cursors
-
-fichier = open("passwords.txt", "r",encoding="utf8")
+import hashlib
+fichier = open("passwords.txt", "r", encoding="utf-8")
 
 
 # Connect to the database
@@ -12,14 +12,18 @@ connection = pymysql.connect(host='localhost',
                              cursorclass=pymysql.cursors.DictCursor)
 
 
+def Sha512Hash(Password):
+    HashedPassword=hashlib.sha512(Password.encode('utf-8')).hexdigest()
+
 
 with connection:
     with connection.cursor() as cursor:
         # Create a new record
         for i in fichier:
             #u = i.encode('utf-8')
-            sql = "INSERT INTO `passwords_list` (`passwords`) VALUES (%s)"
-            cursor.execute(sql, (i))
+            j= Sha512Hash(i)
+            sql = "INSERT INTO `passwords_list` (passwords, hash_password) VALUES (%s,%s)"
+            cursor.execute(sql, (i,j))
 
     # connection is not autocommit by default. So you must commit to save
     # your changes.
@@ -27,7 +31,7 @@ with connection:
 
     with connection.cursor() as cursor:
         # Read a single record
-        sql = "SELECT `id`, `passwords` FROM `passwords_list`"
+        sql = "SELECT * FROM `passwords_list`"
         #cursor.execute(sql, (i))
         result = cursor.fetchone()
         print(result)

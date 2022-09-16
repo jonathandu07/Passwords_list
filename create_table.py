@@ -36,7 +36,7 @@ try:
 
     # SQL query string
 
-    sqlQuery            = "CREATE TABLE passwords_list(id int, passwords varchar(255))"   
+    sqlQuery            = "CREATE TABLE passwords_list(id int NOT NULL AUTO_INCREMENT PRIMARY KEY, passwords varchar(255), hash_password varchar())"   
 
  
 
