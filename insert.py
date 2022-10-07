@@ -14,7 +14,7 @@ connection = pymysql.connect(host='localhost',
 
 def Sha512Hash(Password):
     HashedPassword=hashlib.sha512(Password.encode('utf-8')).hexdigest()
-
+    return HashedPassword
 
 with connection:
     with connection.cursor() as cursor:
