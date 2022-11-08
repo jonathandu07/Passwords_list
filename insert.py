@@ -1,19 +1,7 @@
 import pymysql.cursors
 import hashlib
-#fichier = open("passwords.txt", "r", encoding="utf-8")
-with open("passwords.txt", "r", encoding="utf-8") as file:
-    fichier = file.readlines()
-    
-def removeDuplicate():
-    unique = []
-    for line in fichier:
-        if line not in unique:
-            unique.append(line)
-            
-    return unique
+fichier = open("passwords.txt", "r", encoding="utf-8")
 
-with open("mot_de_passe.txt","w") as outfile:
-    outfile.writelines(removeDuplicate())
             
 # Connect to the database
 connection = pymysql.connect(host='localhost',
@@ -31,10 +19,10 @@ def Sha512Hash(Password):
 with connection:
     with connection.cursor() as cursor:
         # Create a new record
-        for i in removeDuplicate():
+        for i in fichier:
             #u = i.encode('utf-8')
             j= Sha512Hash(i)
-            sql = "INSERT INTO `passwords_list` (passwords, hash_password) VALUES (%s,%s)"
+            sql = "INSERT INTO `passwords_list` (passwords, sha512_password) VALUES (%s,%s)"
             cursor.execute(sql, (i,j))
 
     # connection is not autocommit by default. So you must commit to save
