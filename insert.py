@@ -10,8 +10,13 @@ connection = pymysql.connect(host='localhost',
                              database='passwords',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
-
-
+passwword = []
+for y in fichier:
+    if y not in passwword:
+        passwword.append(y)
+    else:
+        continue
+    
 def Sha512Hash(Password):
     HashedPassword=hashlib.sha512(Password.encode('utf-8')).hexdigest()
     return HashedPassword
@@ -19,7 +24,7 @@ def Sha512Hash(Password):
 with connection:
     with connection.cursor() as cursor:
         # Create a new record
-        for i in fichier:
+        for i in passwword:
             #u = i.encode('utf-8')
             j= Sha512Hash(i)
             sql = "INSERT INTO `passwords_list` (passwords, sha512_password) VALUES (%s,%s)"
