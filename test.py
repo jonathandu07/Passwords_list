@@ -1,8 +1,14 @@
-from Crypto.Cipher import AES
-# Encryption
-encryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-cipher_text = encryption_suite.encrypt("A really secret message. Not for prying eyes.")
+fichier = open("passwords.txt", "r", encoding="utf-8")
 
-# Decryption
-decryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-plain_text = decryption_suite.decrypt(cipher_text)
+list = []
+for i in fichier:
+    if i not in list:
+        list.append(i)
+
+    else :
+        continue
+
+file = open("password.txt", "a", encoding="utf-8")
+for j in list:
+    file.write("\n".j)
+file.close()
