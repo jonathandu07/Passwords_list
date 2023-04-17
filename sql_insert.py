@@ -1,5 +1,6 @@
 import pymysql.cursors
 import hashlib
+import asyncio
 fichier = open("passwords.txt", "r", encoding="utf-8")
 
 # Connect to the database
