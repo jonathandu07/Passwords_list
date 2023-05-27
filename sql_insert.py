@@ -20,10 +20,6 @@ def Sha256Hash(Password):
     HashedPassword=hashlib.sha256(Password.encode('utf-8')).hexdigest()
     return HashedPassword
 
-def Sha256Hash(Password):
-    HashedPassword=hashlib.sha256(Password.encode('utf-8')).hexdigest()
-    return HashedPassword
-
 with connection:
 
         # Create a new record
