@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+Sources/merged_passwords.txt filter=lfs diff=lfs merge=lfs -text
+Sources/mots2passes_unique.txt filter=lfs diff=lfs merge=lfs -text
+Sources/mots2passes.txt filter=lfs diff=lfs merge=lfs -text
