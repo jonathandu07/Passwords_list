@@ -25,7 +25,13 @@ def hash_passwords(password):
     return sha256_hash, sha512_hash
 
 # Fonction pour initialiser la table dans la base de données MySQL
-async def init_db(connection):
+async def init_db():
+    connection = await aiomysql.connect(
+        host=mysql_host,
+        user=mysql_user,
+        password=mysql_password,
+        db=mysql_db
+    )
     async with connection.cursor() as cursor:
         await cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS {mysql_table} (
@@ -36,9 +42,17 @@ async def init_db(connection):
             )
         ''')
         await connection.commit()
+    await connection.ensure_closed()
 
 # Fonction pour filtrer et insérer les mots de passe dans la base de données
-async def process_single_file(file_path, connection, bar):
+async def process_single_file(file_path, bar):
+    # Chaque coroutine utilise sa propre connexion
+    connection = await aiomysql.connect(
+        host=mysql_host,
+        user=mysql_user,
+        password=mysql_password,
+        db=mysql_db
+    )
     async with aiofiles.open(file_path, 'r', encoding='utf-8') as infile:
         async with connection.cursor() as cursor:
             async for line in infile:
@@ -51,21 +65,14 @@ async def process_single_file(file_path, connection, bar):
                         INSERT INTO {mysql_table} (password, sha256, sha512)
                         VALUES (%s, %s, %s)
                     ''', (password, sha256_hash, sha512_hash))
-
                 bar()  # Mettre à jour la barre de progression
+
+    await connection.commit()
+    await connection.ensure_closed()
 
 # Fonction principale pour le traitement des fichiers en parallèle
 async def process_files():
-    # Connexion à la base de données MySQL
-    connection = await aiomysql.connect(
-        host=mysql_host,
-        user=mysql_user,
-        password=mysql_password,
-        db=mysql_db
-    )
-
-    # Initialisation de la base de données
-    await init_db(connection)
+    await init_db()  # Initialiser la table MySQL
 
     # Créer une liste de tous les fichiers .txt
     txt_files = [os.path.join(input_directory, filename)
@@ -84,14 +91,10 @@ async def process_files():
 
         async def process_with_semaphore(file_path):
             async with semaphore:
-                await process_single_file(file_path, connection, bar)
+                await process_single_file(file_path, bar)
 
         # Lancer le traitement de tous les fichiers en parallèle avec une limite
         await asyncio.gather(*(process_with_semaphore(file_path) for file_path in txt_files))
-
-    # Sauvegarder les changements dans la base de données et fermer la connexion
-    await connection.commit()
-    connection.close()
 
     print(f"\nInsertion terminée ! Les mots de passe ont été ajoutés dans la base de données MySQL.")
 
